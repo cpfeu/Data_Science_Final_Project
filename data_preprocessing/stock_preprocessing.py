@@ -1,7 +1,8 @@
 import os
 import math
+import numpy as np
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from configurations.global_config import GlobalConfig
 
 
@@ -23,6 +24,7 @@ class StockParser:
 
 
     def parse_stock_data(self):
+
         data_pd = pd.read_csv(filepath_or_buffer=os.path.join(GlobalConfig.DATA_BASE_PATH,
                                                               self.ticker,
                                                               self.ticker+'_'+self.interval+'.csv'),
@@ -47,9 +49,139 @@ class StockParser:
                                                                              close=close_val))
         print(datetime.now(), ':', self.ticker, 'stock parsing completed.')
 
-        return single_stock_recording_list
+        return single_stock_recording_list[::-1]
 
 
+
+
+
+    def extract_value_lists_from_ssr_list(self, single_stock_recording_list):
+
+        open_list = []
+        close_list = []
+        high_list = []
+        low_list = []
+        volume_list = []
+        for ssr in single_stock_recording_list:
+            if not math.isnan(ssr.open):
+                open_list.append(ssr.open)
+                close_list.append(ssr.close)
+                high_list.append(ssr.high)
+                low_list.append(ssr.low)
+                volume_list.append(ssr.volume)
+
+        return open_list, close_list, high_list, low_list, volume_list
+
+
+
+
+
+
+    def create_stock_feature_dict(self, single_stock_recording_list, start_time, end_time):
+
+        # create list with all relevant days in datetime format
+        start_date = single_stock_recording_list[0].time_stamp.date()
+        end_date = single_stock_recording_list[-1].time_stamp.date()
+        date_list = []
+        for day_counter in range(int((end_date - start_date).days)+1):
+            date_list.append(start_date + timedelta(days=day_counter))
+
+
+        # distribute single_stock_recordings to dictionary
+        single_stock_recording_date_dict = dict()
+        for date in date_list:
+            single_stock_recording_date_dict.update({date: []})
+        for single_stock_recording in single_stock_recording_list:
+            single_stock_recording_date_dict.get(single_stock_recording.time_stamp.date()).append(single_stock_recording)
+
+
+        # strip start_time and end_time to datetime format
+        start_time_dt = datetime.strptime(start_time, "%H:%M:%S").time()
+        end_time_dt = datetime.strptime(end_time, "%H:%M:%S").time()
+
+
+        # create stock feature dictionary
+        stock_feature_dict = dict()
+        for date in date_list[1:]:
+            stock_feature_dict.update({date: dict()})
+
+            # add start_time and end_time to feature dict
+            stock_feature_dict.get(date).update({GlobalConfig.START_TIME: start_time_dt})
+            stock_feature_dict.get(date).update({GlobalConfig.END_TIME: end_time_dt})
+
+            # add single_stock_recording_list to feature dict
+            ssr_list_feature = []
+            ssr_list_date = single_stock_recording_date_dict.get(date)
+            for ssr in ssr_list_date:
+                if ssr.time_stamp.time() >= start_time_dt and ssr.time_stamp.time() <= end_time_dt:
+                    ssr_list_feature.append(ssr)
+            stock_feature_dict.get(date).update({GlobalConfig.SSR_LIST: ssr_list_feature})
+
+            # ========== create temporary open, close, high, low, volume lists ==========
+            open_list, close_list, high_list, low_list, volume_list = \
+                self.extract_value_lists_from_ssr_list(ssr_list_feature)
+
+            # other features depend on whether there is data present for the current date
+            if len(open_list) > 0:
+
+                # add over over night difference to feature dict
+                try:
+                    over_night_diff = single_stock_recording_date_dict.get(date)[0].open - \
+                                      single_stock_recording_date_dict.get(date - timedelta(days=1))[-1].close
+                    stock_feature_dict.get(date).update({GlobalConfig.OVER_NIGHT_DIFF: over_night_diff})
+                except IndexError:
+                    stock_feature_dict.get(date).update({GlobalConfig.OVER_NIGHT_DIFF: 0})
+
+                # add max_margin feature to feature dict
+                max_margin = np.amax(high_list) - np.amin(low_list)
+                stock_feature_dict.get(date).update({GlobalConfig.MAX_MARGIN: max_margin})
+
+                # add absolute difference to feature dict
+                abs_difference = close_list[-1] - open_list[0]
+                stock_feature_dict.get(date).update({GlobalConfig.ABS_DIFFERENCE: abs_difference})
+
+                # add percentage change to feature dict
+                per_change = ((close_list[-1] - open_list[0]) / open_list[0]) * 100
+                stock_feature_dict.get(date).update({GlobalConfig.PER_CHANGE: per_change})
+
+                # add absolute trading volume to feature dict
+                abs_vol = np.sum(volume_list)
+                stock_feature_dict.get(date).update({GlobalConfig.ABS_VOL: abs_vol})
+
+                # add volume fluctuation to feature dict
+                vol_fluc = np.std(volume_list)
+                stock_feature_dict.get(date).update({GlobalConfig.VOL_FLUC: vol_fluc})
+
+                # add price fluctuation to feature dict
+                price_fluc = np.std(high_list)
+                stock_feature_dict.get(date).update({GlobalConfig.PRICE_FLUC: price_fluc})
+
+            else:
+
+                #add over night difference to feature dict
+                stock_feature_dict.get(date).update({GlobalConfig.OVER_NIGHT_DIFF: 0})
+
+                # add max_margin feature to feature dict
+                stock_feature_dict.get(date).update({GlobalConfig.MAX_MARGIN: 0})
+
+                # add absolute difference to feature dict
+                stock_feature_dict.get(date).update({GlobalConfig.ABS_DIFFERENCE: 0})
+
+                # add percentage change to feature dict
+                stock_feature_dict.get(date).update({GlobalConfig.PER_CHANGE: 0})
+
+                # add absolute trading volume to feature dict
+                stock_feature_dict.get(date).update({GlobalConfig.ABS_VOL: 0})
+
+                # add volume fluctuation to feature dict
+                stock_feature_dict.get(date).update({GlobalConfig.VOL_FLUC: 0})
+
+                # add price fluctuation to feature dict
+                stock_feature_dict.get(date).update({GlobalConfig.PRICE_FLUC: 0})
+
+        print(datetime.now(), ':', self.ticker, 'stock_feature_dict created.')
+
+        return stock_feature_dict
 
 
 

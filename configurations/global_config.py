@@ -28,6 +28,14 @@ class GlobalConfig:
     SNOWFLAKE_TICKER_STR = 'SNOW'
     GOLDMAN_SACHS_TICKER = 'GS'
     BANK_OF_AMERICA_TICKER = 'BAC'
+    NIO_TICKER = 'NIO'
+    GOOGLE_TICKER = 'GOOGL'
+    UBER_TICKER = 'UBER'
+
+    TICKER_LIST = [TESLA_TICKER_STR, KODAK_TICKER_STR, PALANTIR_TICKER_STR,
+                   SNOWFLAKE_TICKER_STR, GOLDMAN_SACHS_TICKER, BANK_OF_AMERICA_TICKER, NIO_TICKER,
+                   GOOGLE_TICKER, UBER_TICKER]
+
 
     # Intervals
     ONE_MIN_INTERVAL = '1min'
@@ -36,6 +44,10 @@ class GlobalConfig:
     THIRTY_MIN_INTERVAL = '30min'
     SIXTY_MIN_INTERVAL = '60min'
 
+    INTERVAL_LIST = [ONE_MIN_INTERVAL, FIVE_MIN_INTERVAL,
+                     FIFTEEN_MIN_INTERVAL, THIRTY_MIN_INTERVAL, SIXTY_MIN_INTERVAL]
+
+
     # Stock parameters
     STOCK_PARAM_TIME = 'time'
     STOCK_PARAM_OPEN = 'open'
@@ -43,6 +55,23 @@ class GlobalConfig:
     STOCK_PARAM_LOW = 'low'
     STOCK_PARAM_HIGH = 'high'
     STOCK_PARAM_VOLUME = 'volume'
+
+    STOCK_PARAM_LIST = [STOCK_PARAM_TIME, STOCK_PARAM_OPEN, STOCK_PARAM_CLOSE,
+                        STOCK_PARAM_LOW, STOCK_PARAM_HIGH, STOCK_PARAM_VOLUME]
+
+
+    # Stock feature dict parameters
+    START_TIME = 'start_time'
+    END_TIME = 'end_time'
+    SSR_LIST = 'ssr_list'
+    OVER_NIGHT_DIFF = 'over_night_difference'
+    MAX_MARGIN = 'max_margin'
+    ABS_DIFFERENCE = 'absolute_difference'
+    PER_CHANGE = 'percentage_change'
+    ABS_VOL = 'absolute_trading_volume'
+    VOL_FLUC = 'volume_fluctuation'
+    PRICE_FLUC = 'price_fluctuation'
+
 
     # Plotly colors
     OPEN_COLOR = 'blue'

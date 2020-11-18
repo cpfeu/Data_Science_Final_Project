@@ -1,4 +1,5 @@
 import os
+import sys
 import plotly.offline as po
 import plotly.graph_objs as go
 from datetime import datetime
@@ -7,9 +8,9 @@ from configurations.global_config import GlobalConfig
 
 class StockVisualizer:
 
-    def __init__(self, single_stock_recording_list):
+    def __init__(self, single_stock_recording_list, stock_feature_dict=None):
         self.single_stock_recording_list = single_stock_recording_list
-
+        self.stock_feature_dict = stock_feature_dict
 
     def plot_all_in_one_chart(self):
         time_stamp_list = []
@@ -58,4 +59,142 @@ class StockVisualizer:
                                               self.single_stock_recording_list[0].name, "All_in_one_plot.html"), auto_open=False)
         print(datetime.now(), ':', self.single_stock_recording_list[0].name, 'all_in_one_plot created.')
 
+
+
+
+    def plot_stock_features(self):
+
+
+        # check is stock_feature_dict argument was passed
+        if self.stock_feature_dict is None:
+            print('Passed stock_feature_dict is of type None.')
+            sys.exit(0)
+
+
+        # description parameter
+        ticker = self.single_stock_recording_list[0].name
+        start_time = list(self.stock_feature_dict.values())[0].get(GlobalConfig.START_TIME)
+        end_time = list(self.stock_feature_dict.values())[0].get(GlobalConfig.END_TIME)
+
+
+        # extract feature lists
+        date_list = []
+        abs_traded_volume_list = []
+        vol_fluc_list = []
+        max_margin_list = []
+        over_night_diff_list = []
+        abs_diff_list = []
+        per_change_list = []
+        price_fluc_list = []
+        for key, dict_value in self.stock_feature_dict.items():
+            date_list.append(key)
+            abs_traded_volume_list.append(dict_value.get(GlobalConfig.ABS_VOL))
+            vol_fluc_list.append(dict_value.get(GlobalConfig.VOL_FLUC))
+            max_margin_list.append(dict_value.get(GlobalConfig.MAX_MARGIN))
+            over_night_diff_list.append(dict_value.get(GlobalConfig.OVER_NIGHT_DIFF))
+            abs_diff_list.append(dict_value.get(GlobalConfig.ABS_DIFFERENCE))
+            per_change_list.append(dict_value.get(GlobalConfig.PER_CHANGE))
+            price_fluc_list.append(dict_value.get(GlobalConfig.PRICE_FLUC))
+
+
+        # create traces and layout for volume features and plot figure
+        abs_traded_volume_trace = go.Scattergl(x=date_list, y=abs_traded_volume_list, mode='lines+markers',
+                                               line=dict(color='grey', width=0.5),
+                                               marker=dict(color='darkgrey', size=8, opacity=0.7, symbol='circle-open',
+                                                           line=dict(color='grey', width=2)),
+                                               name=GlobalConfig.ABS_VOL,
+                                               text='Absolute trading volume between '+
+                                                    str(start_time)+' and '+str(end_time)+' in $',
+                                               showlegend=True,
+                                               hoverinfo='text',
+                                               opacity=0.7,
+                                               hoverlabel=dict(bgcolor='darkgrey'))
+        vol_fluc_trace = go.Scattergl(x=date_list, y=vol_fluc_list, mode='lines+markers',
+                                      line=dict(color='grey', width=0.5),
+                                      marker=dict(color='slategrey', size=8, opacity=0.7, symbol='triangle-right',
+                                                  line=dict(color='grey', width=2)),
+                                      name=GlobalConfig.VOL_FLUC,
+                                      text='Volume standard deviation between '+str(start_time)+' and '+str(end_time),
+                                      showlegend=True,
+                                      hoverinfo='text',
+                                      opacity=0.7,
+                                      hoverlabel=dict(bgcolor='slategrey'))
+        layout_plot_1 = dict(title=ticker + '<br>Daily Volume Features between '+str(start_time)+' and '+str(end_time),
+                             xaxis=dict(title='Date',
+                                        titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+                             yaxis=dict(title='Volume Feature Units',
+                                        titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+                             hovermode='closest')
+        figure_plot_1 = dict(data=[abs_traded_volume_trace, vol_fluc_trace], layout=layout_plot_1)
+        po.plot(figure_plot_1, filename=os.path.join(GlobalConfig.PROGRAMMING_OUTPUTS_BASE_PATH,
+                                              ticker, "volume_features.html"), auto_open=False)
+        print(datetime.now(), ':', ticker, 'volume_feature_plot created.')
+
+
+        # create traces and layout for remaining features and plot figure
+        max_margin_trace = go.Scattergl(x=date_list, y=max_margin_list, mode='lines+markers',
+                                        line=dict(color='green', width=0.5),
+                                        marker=dict(color='darkgreen', size=8, opacity=0.7, symbol='square',
+                                                    line=dict(color='green', width=2)),
+                                        name=GlobalConfig.MAX_MARGIN,
+                                        text='Maximum price difference between '+
+                                             str(start_time)+' and '+str(end_time)+' in $',
+                                        showlegend=True,
+                                        hoverinfo='text',
+                                        opacity=0.7,
+                                        hoverlabel=dict(bgcolor='darkgreen'))
+        over_night_diff_trace = go.Scattergl(x=date_list, y=over_night_diff_list, mode='lines+markers',
+                                        line=dict(color='blue', width=0.5),
+                                        marker=dict(color='deepskyblue', size=8, opacity=0.7, symbol='circle',
+                                                    line=dict(color='blue', width=2)),
+                                        name=GlobalConfig.OVER_NIGHT_DIFF,
+                                        text='Price difference from close (yesterday) to open (today) in $',
+                                        showlegend=True,
+                                        hoverinfo='text',
+                                        opacity=0.7,
+                                        hoverlabel=dict(bgcolor='blue'))
+        abs_diff_trace = go.Scattergl(x=date_list, y=abs_diff_list, mode='lines+markers',
+                                        line=dict(color='mediumblue', width=0.5),
+                                        marker=dict(color='midnightblue', size=8, opacity=0.7, symbol='diamond',
+                                                    line=dict(color='mediumblue', width=2)),
+                                        name=GlobalConfig.ABS_DIFFERENCE,
+                                        text='Price difference between open at '+
+                                             str(start_time)+' and close at '+str(end_time)+' in $',
+                                        showlegend=True,
+                                        hoverinfo='text',
+                                        opacity=0.7,
+                                        hoverlabel=dict(bgcolor='mediumblue'))
+        per_change_trace = go.Scattergl(x=date_list, y=per_change_list, mode='lines+markers',
+                                        line=dict(color='red', width=0.5),
+                                        marker=dict(color='darkred', size=8, opacity=0.7, symbol='hexagram',
+                                                    line=dict(color='red', width=2)),
+                                        name=GlobalConfig.PER_CHANGE,
+                                        text='Percentage price change between open at '+
+                                             str(start_time)+' and close at '+str(end_time)+' in %',
+                                        showlegend=True,
+                                        hoverinfo='text',
+                                        opacity=0.7,
+                                        hoverlabel=dict(bgcolor='red'))
+        price_fluc_trace = go.Scattergl(x=date_list, y=price_fluc_list, mode='lines+markers',
+                                        line=dict(color='orange', width=0.5),
+                                        marker=dict(color='darkorange', size=8, opacity=0.7, symbol='pentagon',
+                                                    line=dict(color='orange', width=2)),
+                                        name=GlobalConfig.PRICE_FLUC,
+                                        text='Price standard deviation between '+
+                                             str(start_time)+' and '+str(end_time),
+                                        showlegend=True,
+                                        hoverinfo='text',
+                                        opacity=0.7,
+                                        hoverlabel=dict(bgcolor='orange'))
+        layout_plot_2 = dict(title=ticker + '<br>Daily Stock Price Features between '+str(start_time)+' and '+str(end_time),
+                             xaxis=dict(title='Date',
+                                        titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+                             yaxis=dict(title='Stock Price Feature Units',
+                                        titlefont=dict(family='Courier New, monospace', size=18, color='#7f7f7f')),
+                             hovermode='closest')
+        figure_plot_1 = dict(data=[max_margin_trace, over_night_diff_trace,
+                                   abs_diff_trace, per_change_trace, price_fluc_trace], layout=layout_plot_2)
+        po.plot(figure_plot_1, filename=os.path.join(GlobalConfig.PROGRAMMING_OUTPUTS_BASE_PATH,
+                                              ticker, "price_features.html"), auto_open=False)
+        print(datetime.now(), ':', ticker, 'price_feature_plot created.')
 
