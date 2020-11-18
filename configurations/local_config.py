@@ -7,7 +7,7 @@ class LocalConfig:
     NUM_CPUs = os.cpu_count() - 2
 
     # Stock Pulling API
-    ALPHA_VANTAGE_API_KEY_EXTENDED_HISTORY = 'OP5D9A64ADCHRG8R'
+    ALPHA_VANTAGE_API_KEY_EXTENDED_HISTORY = 'XXXXXXXXXXX'
 
     # Data base path
     DATA_BASE_PATH = 'C:/Users/cpfeu/Data/Data_Science_Final_Project'
