@@ -20,6 +20,14 @@ These files holds all execution commands.
 This file contains code with which stock data sets can be 
 downloaded with an Alpha Vantage API and stored in a csv file.
 
+###twitter_pulling.py
+This file contains code with which historical tweet data 
+for the chosen keyword is pulled and stored in a csv file.
+
+###reddit_pulling.py
+This file contains code to pull reddit post data for the chosen companies 
+and store it in a csv file.
+
 ###stock_preprocessing.py
 A file to parse the stock data sets and perform a number
 of preprocessing steps for visualization and 
