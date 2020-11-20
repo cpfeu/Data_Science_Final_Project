@@ -2,6 +2,7 @@ import os
 import sys
 import plotly.offline as po
 import plotly.graph_objs as go
+import matplotlib.pyplot as plt
 from datetime import datetime
 from configurations.global_config import GlobalConfig
 
@@ -63,8 +64,6 @@ class StockVisualizer:
 
 
     def plot_stock_features(self):
-
-
         # check is stock_feature_dict argument was passed
         if self.stock_feature_dict is None:
             print('Passed stock_feature_dict is of type None.')
@@ -197,4 +196,94 @@ class StockVisualizer:
         po.plot(figure_plot_1, filename=os.path.join(GlobalConfig.PROGRAMMING_OUTPUTS_BASE_PATH,
                                               ticker, "price_features.html"), auto_open=False)
         print(datetime.now(), ':', ticker, 'price_feature_plot created.')
+
+
+
+    def plot_stock_feature_histogranms(self):
+        # check is stock_feature_dict argument was passed
+        if self.stock_feature_dict is None:
+            print('Passed stock_feature_dict is of type None.')
+            sys.exit(0)
+
+        # description parameter
+        ticker = self.single_stock_recording_list[0].name
+        start_date = list(self.stock_feature_dict.keys())[0]
+        end_date = list(self.stock_feature_dict.keys())[-1]
+
+        # extract list of values for each feature
+        over_night_diff_list = []
+        max_margin_list = []
+        abs_diff_list = []
+        per_change_list = []
+        abs_vol_list = []
+        vol_fluc_list = []
+        price_fluc_list = []
+        for date_key, feature_dict in self.stock_feature_dict.items():
+            if (date_key.weekday() == 5 or date_key.weekday() == 6):
+                continue
+            else:
+                for feature_key, feature_value in feature_dict.items():
+                    if feature_key == GlobalConfig.OVER_NIGHT_DIFF:
+                        over_night_diff_list.append(feature_value)
+                    elif feature_key == GlobalConfig.MAX_MARGIN:
+                        max_margin_list.append(feature_value)
+                    elif feature_key == GlobalConfig.ABS_DIFFERENCE:
+                        abs_diff_list.append(feature_value)
+                    elif feature_key == GlobalConfig.PER_CHANGE:
+                        per_change_list.append(feature_value)
+                    elif feature_key == GlobalConfig.ABS_VOL:
+                        abs_vol_list.append(feature_value)
+                    elif feature_key == GlobalConfig.VOL_FLUC:
+                        vol_fluc_list.append(feature_value)
+                    elif feature_key == GlobalConfig.PRICE_FLUC:
+                        price_fluc_list.append(feature_value)
+                    else:
+                        continue
+
+        # create histogram plot for features
+        figure, ((f11, f12, f13, f14), (f21, f22, f23, f24)) = plt.subplots(nrows=2, ncols=4, figsize=(18, 10))
+        figure.suptitle(ticker + ' Daily Feature Histograms \nTime: '+str(start_date)+' until '+str(end_date), size=16)
+
+        f11.hist(over_night_diff_list, bins=30, color="blue", rwidth=0.95)
+        # f11.set_xlabel("Feature bin", fontsize=8)
+        # f11.set_ylabel("Quantity", fontsize=8)
+        f11.set_title(GlobalConfig.OVER_NIGHT_DIFF + '\nfeature histogram')
+
+        f12.hist(max_margin_list, bins=30, color="blue", rwidth=0.95)
+        # f12.set_xlabel("Feature bin", fontsize=8)
+        # f12.set_ylabel("Quantity", fontsize=8)
+        f12.set_title(GlobalConfig.MAX_MARGIN + '\nfeature histogram')
+
+        f13.hist(abs_diff_list, bins=30, color="blue", rwidth=0.95)
+        # f13.set_xlabel("Feature bin", fontsize=8)
+        # f13.set_ylabel("Quantity", fontsize=8)
+        f13.set_title(GlobalConfig.ABS_DIFFERENCE + '\nfeature histogram')
+
+        f14.hist(per_change_list, bins=30, color="blue", rwidth=0.95)
+        # f14.set_xlabel("Feature bin", fontsize=8)
+        # f14.set_ylabel("Quantity", fontsize=8)
+        f14.set_title(GlobalConfig.PER_CHANGE + '\nfeature histogram')
+
+        f21.hist(abs_vol_list, bins=30, color="blue", rwidth=0.95)
+        # f21.set_xlabel("Feature bin", fontsize=8)
+        f21.ticklabel_format(style='sci', axis='x')
+        # f21.set_ylabel("Quantity", fontsize=8)
+        f21.set_title(GlobalConfig.ABS_VOL + '\nfeature histogram')
+
+        f22.hist(vol_fluc_list, bins=30, color="blue", rwidth=0.95)
+        # f22.set_xlabel("Feature bin", fontsize=8)
+        f22.ticklabel_format(style='sci', axis='x')
+        # f22.set_ylabel("Quantity", fontsize=8)
+        f22.set_title(GlobalConfig.VOL_FLUC + '\nfeature histogram')
+
+        f23.hist(price_fluc_list, bins=30, color="blue", rwidth=0.95)
+        # f23.set_xlabel("Feature bin", fontsize=8)
+        # f23.set_ylabel("Quantity", fontsize=8)
+        f23.set_title(GlobalConfig.PRICE_FLUC + '\nfeature histogram')
+
+        plt.savefig(os.path.join(GlobalConfig.PROGRAMMING_OUTPUTS_BASE_PATH,
+                                 ticker, "feature_histograms.png"), dpi=400)
+
+        print(datetime.now(), ':', ticker, 'feature_histograms plot created.')
+
 
