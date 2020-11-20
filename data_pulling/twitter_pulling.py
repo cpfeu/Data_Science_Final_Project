@@ -2,6 +2,7 @@ import pandas as pd
 import tweepy
 import subprocess
 import sys
+from configurations.global_config import GlobalConfig
 
 def fetch_tw(ids):
     list_of_tw_status = api.statuses_lookup(ids, tweet_mode= "extended")
@@ -22,10 +23,10 @@ if __name__ == '__main__':
     cmd = ''f'snscrape --max-results 100000 twitter-search "{keyword} since:2018-11-15 until:2020-11-15" > tw_{company}.txt'''
     process = subprocess.run(cmd, shell=True)
 
-    access_token = "1325482462038855680-5CeYdBq8aacwxbdFZ6ta0AzaMgJpa1" 
-    access_token_secret = "PK6ZReEZwbfqmF6w9t7GDxdFI7d1EP5RR9lmLwZjRbR8q"  
-    consumer_key = "xQAPcERrIPxKM63WUIJSsKy3u" 
-    consumer_secret = "pv2JSX65cDe0DiWVeejDBpesWD05uhxxH5OaMGcXAEsRL0kiRm"
+    access_token =GlobalConfig.ACCESS_TOKEN
+    access_token_secret = GlobalConfig.ACCESS_TOKEN_SECRET
+    consumer_key = GlobalConfig.CONSUMER_KEY
+    consumer_secret = GlobalConfig.CONSUMER_SECRET
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret) 
     auth.set_access_token(access_token, access_token_secret)

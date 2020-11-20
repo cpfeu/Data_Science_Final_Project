@@ -79,3 +79,9 @@ class GlobalConfig:
     HIGH_COLOR = 'orange'
     LOW_COLOR = 'green'
     VOLUME_COLOR = 'grey'
+
+    # Isha Twitter Keys
+    ACCESS_TOKEN = LocalConfig.access_token
+    ACCESS_TOKEN_SECRET = LocalConfig.access_token_secret
+    CONSUMER_KEY = LocalConfig.consumer_key
+    CONSUMER_SECRET = LocalConfig.consumer_secret
