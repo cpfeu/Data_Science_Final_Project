@@ -45,6 +45,7 @@ def detokenize_words(words):
     return separator.join(words)
 
 def preprocess_reddit(df, textcol='body', tscol='created_utc'):
+    df[textcol] = df[textcol].astype(str)
     df[textcol] = df[textcol].apply(to_lowercase)
     df[textcol] = df[textcol].apply(replace_contractions)
     df[textcol] = df[textcol].apply(remove_URL)
@@ -52,6 +53,7 @@ def preprocess_reddit(df, textcol='body', tscol='created_utc'):
     df[textcol] = df[textcol].apply(remove_non_ascii)
     df[textcol] = df[textcol].apply(remove_punctuation)
     df[textcol] = df[textcol].apply(detokenize_words)
+    df.dropna(inplace=True)
     df[tscol] = df[tscol].apply(to_datetime)
     return df
 
