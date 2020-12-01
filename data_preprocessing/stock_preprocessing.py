@@ -1,5 +1,6 @@
 import os
 import math
+import pickle
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta, date
@@ -77,7 +78,8 @@ class StockParser:
 
 
 
-    def create_stock_feature_dict(self, single_stock_recording_list, start_time, end_time):
+    def create_stock_feature_dict(self, single_stock_recording_list, start_time, end_time,
+                                  store_in_pkl_file=False):
 
         # create list with all relevant days in datetime format
         start_date = single_stock_recording_list[0].time_stamp.date()
@@ -180,6 +182,11 @@ class StockParser:
                 stock_feature_dict.get(date).update({GlobalConfig.PRICE_FLUC: 0})
 
         print(datetime.now(), ':', self.ticker, 'stock_feature_dict created.')
+
+        if store_in_pkl_file:
+            with open('../feature_dictionaries/'+self.ticker+'_stock_feature_dict.pkl',
+                      'wb') as file:
+                pickle.dump(stock_feature_dict, file)
 
         return stock_feature_dict
 
