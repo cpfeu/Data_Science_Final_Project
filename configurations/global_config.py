@@ -73,6 +73,23 @@ class GlobalConfig:
     PRICE_FLUC = 'price_fluctuation'
 
 
+    # Social media dict parameters
+    TWEET_LIST = 'tweets'
+    PREDICTION_LIST = 'predictions'
+    SENTIMENT_LIST = 'sentiments'
+    TIMESTAMP_LIST = 'timestamps'
+    POSITIVE_PREDICTION_STR = 'positive'
+    NEUTRAL_PREDICTION_STR = 'neutral'
+    NEGATIVE_PREDICTION_STR = 'negative'
+    AVERAGE_SENTIMENT = 'average_sentiment'
+    POS_PER_SENTIMENT = 'positive_percentage'
+    NEU_PER_SENTIMENT = 'neutral_percentage'
+    NEG_PER_SENTIMENT = 'negative_percentage'
+    NUM_POS = 'number_posts'
+    MAX_SENTIMENT_MARGIN = 'max_sentiment_margin'
+
+
+
     # Plotly colors
     OPEN_COLOR = 'blue'
     CLOSE_COLOR = 'red'

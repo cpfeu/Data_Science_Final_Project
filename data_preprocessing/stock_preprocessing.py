@@ -1,6 +1,7 @@
 import os
 import math
-import pickle
+import json
+# import pickle
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta, date
@@ -77,9 +78,30 @@ class StockParser:
 
 
 
+    def prepare_for_json(self, dict_item):
+
+        prepared_dict = dict()
+        for date_key, date_dict in dict_item.items():
+
+            # convert datetime.date key into str key
+            prepared_dict.update({str(date_key): dict()})
+
+            for feature_key, feature_value in date_dict.items():
+
+                # convert datetime.time value into str value
+                if feature_key == GlobalConfig.START_TIME or feature_key == GlobalConfig.END_TIME:
+                    prepared_dict.get(str(date_key)).update({feature_key: str(feature_value)})
+                else:
+                    prepared_dict.get(str(date_key)).update({feature_key: feature_value})
+
+        return prepared_dict
+
+
+
+
 
     def create_stock_feature_dict(self, single_stock_recording_list, start_time, end_time,
-                                  store_in_pkl_file=False):
+                                  store_in_json_file=False):
 
         # create list with all relevant days in datetime format
         start_date = single_stock_recording_list[0].time_stamp.date()
@@ -117,7 +139,8 @@ class StockParser:
             for ssr in ssr_list_date:
                 if ssr.time_stamp.time() >= start_time_dt and ssr.time_stamp.time() <= end_time_dt:
                     ssr_list_feature.append(ssr)
-            stock_feature_dict.get(date).update({GlobalConfig.SSR_LIST: ssr_list_feature})
+                if not store_in_json_file:
+                    stock_feature_dict.get(date).update({GlobalConfig.SSR_LIST: ssr_list_feature})
 
             # ========== create temporary open, close, high, low, volume lists ==========
             open_list, close_list, high_list, low_list, volume_list = \
@@ -183,10 +206,11 @@ class StockParser:
 
         print(datetime.now(), ':', self.ticker, 'stock_feature_dict created.')
 
-        if store_in_pkl_file:
-            with open('../feature_dictionaries/'+self.ticker+'_stock_feature_dict.pkl',
-                      'wb') as file:
-                pickle.dump(stock_feature_dict, file)
+        if store_in_json_file:
+            stock_feature_dict_json = self.prepare_for_json(dict_item=stock_feature_dict)
+            with open('../feature_dictionaries/'+self.ticker+'_stock_feature_dict.json',
+                      'w') as file:
+                json.dump(stock_feature_dict_json, file)
 
         return stock_feature_dict
 
