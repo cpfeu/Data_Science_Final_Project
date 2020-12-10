@@ -31,10 +31,14 @@ class GlobalConfig:
     NIO_TICKER = 'NIO'
     GOOGLE_TICKER = 'GOOGL'
     UBER_TICKER = 'UBER'
+    BOEING_TICKER = 'BA'
+    NIKOLA_TICKER = 'NKLA'
 
+    # TICKER_LIST = [TESLA_TICKER_STR, KODAK_TICKER_STR, PALANTIR_TICKER_STR,
+    #                SNOWFLAKE_TICKER_STR, GOLDMAN_SACHS_TICKER, BANK_OF_AMERICA_TICKER, NIO_TICKER,
+    #                GOOGLE_TICKER, UBER_TICKER, BOEING_TICKER, NIKOLA_TICKER]
     TICKER_LIST = [TESLA_TICKER_STR, KODAK_TICKER_STR, PALANTIR_TICKER_STR,
-                   SNOWFLAKE_TICKER_STR, GOLDMAN_SACHS_TICKER, BANK_OF_AMERICA_TICKER, NIO_TICKER,
-                   GOOGLE_TICKER, UBER_TICKER]
+                   GOLDMAN_SACHS_TICKER, BANK_OF_AMERICA_TICKER, NIO_TICKER]
 
 
     # Intervals
@@ -59,18 +63,20 @@ class GlobalConfig:
     STOCK_PARAM_LIST = [STOCK_PARAM_TIME, STOCK_PARAM_OPEN, STOCK_PARAM_CLOSE,
                         STOCK_PARAM_LOW, STOCK_PARAM_HIGH, STOCK_PARAM_VOLUME]
 
+    # Date string
+    DATE_LIST = 'date_list'
 
     # Stock feature dict parameters
     START_TIME = 'start_time'
     END_TIME = 'end_time'
     SSR_LIST = 'ssr_list'
     OVER_NIGHT_DIFF = 'over_night_difference'
-    MAX_MARGIN = 'max_margin'
-    ABS_DIFFERENCE = 'absolute_difference'
+    MAX_MARGIN = 'peak_to_trough'
+    ABS_DIFFERENCE = 'open_close_difference'
     PER_CHANGE = 'percentage_change'
-    ABS_VOL = 'absolute_trading_volume'
-    VOL_FLUC = 'volume_fluctuation'
-    PRICE_FLUC = 'price_fluctuation'
+    ABS_VOL = 'trading_volume'
+    VOL_FLUC = 'volume_stdev'
+    PRICE_FLUC = 'price_stdev'
 
 
     # Social media dict parameters
@@ -87,6 +93,28 @@ class GlobalConfig:
     NEG_PER_SENTIMENT = 'negative_percentage'
     NUM_POS = 'number_posts'
     MAX_SENTIMENT_MARGIN = 'max_sentiment_margin'
+
+
+    # Twitter feature paramterers
+    TWITTER_AVERAGE_SENTIMENT = 'twitter_average_sentiment'
+    TWITTER_POS_PER_SENTIMENT = 'twitter_positive_percentage'
+    TWITTER_NEU_PER_SENTIMENT = 'twitter_neutral_percentage'
+    TWITTER_NEG_PER_SENTIMENT = 'twitter_negative_percentage'
+    TWITTER_NUM_POS = 'twitter_number_posts'
+    TWITTER_MAX_SENTIMENT_MARGIN = 'twitter_max_sentiment_margin'
+
+    # Reddit feature paramterers
+    REDDIT_AVERAGE_SENTIMENT = 'reddit_average_sentiment'
+    REDDIT_POS_PER_SENTIMENT = 'reddit_positive_percentage'
+    REDDIT_NEU_PER_SENTIMENT = 'reddit_neutral_percentage'
+    REDDIT_NEG_PER_SENTIMENT = 'reddit_negative_percentage'
+    REDDIT_NUM_POS = 'reddit_number_posts'
+    REDDIT_MAX_SENTIMENT_MARGIN = 'reddit_max_sentiment_margin'
+
+
+    # Time lag directions
+    TIME_LAG_RIGHT = 'right'
+    TIME_LAG_LEFT = 'left'
 
 
 
