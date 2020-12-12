@@ -103,7 +103,7 @@ class StockVisualizer:
                                                            line=dict(color='grey', width=2)),
                                                name=GlobalConfig.ABS_VOL,
                                                text='Absolute trading volume between '+
-                                                    str(start_time)+' and '+str(end_time)+' in $',
+                                                    str(start_time)+' and '+str(end_time),
                                                showlegend=True,
                                                hoverinfo='text',
                                                opacity=0.7,
@@ -283,6 +283,7 @@ class StockVisualizer:
 
         plt.savefig(os.path.join(GlobalConfig.PROGRAMMING_OUTPUTS_BASE_PATH,
                                  ticker, "feature_histograms.png"), dpi=400)
+        plt.close()
 
         print(datetime.now(), ':', ticker, 'feature_histograms plot created.')
 

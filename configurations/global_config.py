@@ -14,6 +14,12 @@ class GlobalConfig:
     # Programming outputs base path
     PROGRAMMING_OUTPUTS_BASE_PATH = LocalConfig.PROGRAMMING_OUTPUTS_BASE_PATH
 
+    # Isha Twitter Keys
+    ACCESS_TOKEN = LocalConfig.access_token
+    ACCESS_TOKEN_SECRET = LocalConfig.access_token_secret
+    CONSUMER_KEY = LocalConfig.consumer_key
+    CONSUMER_SECRET = LocalConfig.consumer_secret
+
     # Parameters for AlphaVantage API
     SLICE_LIST = ['year1month1', 'year1month2', 'year1month3', 'year1month4', 'year1month5', 'year1month6',
                   'year1month7', 'year1month8', 'year1month9', 'year1month10', 'year1month11', 'year1month12',
@@ -23,22 +29,15 @@ class GlobalConfig:
     # Tickers
     TESLA_TICKER_STR = 'TSLA'
     KODAK_TICKER_STR = 'KODK'
-    HERTZ_TICKER_STR = 'HTZ'
     PALANTIR_TICKER_STR = 'PLTR'
-    SNOWFLAKE_TICKER_STR = 'SNOW'
     GOLDMAN_SACHS_TICKER = 'GS'
     BANK_OF_AMERICA_TICKER = 'BAC'
     NIO_TICKER = 'NIO'
-    GOOGLE_TICKER = 'GOOGL'
-    UBER_TICKER = 'UBER'
     BOEING_TICKER = 'BA'
     NIKOLA_TICKER = 'NKLA'
 
-    # TICKER_LIST = [TESLA_TICKER_STR, KODAK_TICKER_STR, PALANTIR_TICKER_STR,
-    #                SNOWFLAKE_TICKER_STR, GOLDMAN_SACHS_TICKER, BANK_OF_AMERICA_TICKER, NIO_TICKER,
-    #                GOOGLE_TICKER, UBER_TICKER, BOEING_TICKER, NIKOLA_TICKER]
-    TICKER_LIST = [TESLA_TICKER_STR, KODAK_TICKER_STR, PALANTIR_TICKER_STR,
-                   GOLDMAN_SACHS_TICKER, BANK_OF_AMERICA_TICKER, NIO_TICKER]
+    TICKER_LIST = [TESLA_TICKER_STR, KODAK_TICKER_STR, PALANTIR_TICKER_STR, GOLDMAN_SACHS_TICKER,
+                   BANK_OF_AMERICA_TICKER, NIO_TICKER, BOEING_TICKER, NIKOLA_TICKER]
 
 
     # Intervals
@@ -117,7 +116,6 @@ class GlobalConfig:
     TIME_LAG_LEFT = 'left'
 
 
-
     # Plotly colors
     OPEN_COLOR = 'blue'
     CLOSE_COLOR = 'red'
@@ -125,8 +123,3 @@ class GlobalConfig:
     LOW_COLOR = 'green'
     VOLUME_COLOR = 'grey'
 
-    # Isha Twitter Keys
-    ACCESS_TOKEN = LocalConfig.access_token
-    ACCESS_TOKEN_SECRET = LocalConfig.access_token_secret
-    CONSUMER_KEY = LocalConfig.consumer_key
-    CONSUMER_SECRET = LocalConfig.consumer_secret

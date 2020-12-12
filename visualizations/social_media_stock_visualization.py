@@ -17,6 +17,7 @@ class CombinedVisualizer:
 
     def __init__(self, stock_ticker):
         self.ticker = stock_ticker
+        os.makedirs(os.path.join(GlobalConfig.PROGRAMMING_OUTPUTS_BASE_PATH, stock_ticker), exist_ok=True)
         with open('../feature_dictionaries/'+stock_ticker+'_stock_feature_dict.json', 'r') as file:
             stock_feature_dict_json = json.load(file)
         self.stock_feature_dict = prepare_stock_dict_from_json(dict_item=stock_feature_dict_json)
@@ -223,8 +224,8 @@ class CombinedVisualizer:
                                              line=dict(color='blue', width=0.5),
                                              marker=dict(color='deepskyblue', size=8, opacity=0.7, symbol='circle',
                                                          line=dict(color='blue', width=2)),
-                                             name='twitter_sentiment_scores',
-                                             text='Sentiment scores of tweets calculated through finbert model [-1; 1]',
+                                             name=twitter_feature,
+                                             text=str(twitter_feature)+'rescaled to [-1;1]',
                                              showlegend=True,
                                              hoverinfo='text',
                                              opacity=0.7,
@@ -234,8 +235,8 @@ class CombinedVisualizer:
                                              line=dict(color='orange', width=0.5),
                                              marker=dict(color='darkorange', size=8, opacity=0.7, symbol='circle',
                                                          line=dict(color='orange', width=2)),
-                                             name='reddit_sentiment_scores',
-                                             text='Sentiment scores of reddit posts calculated through finbert model [-1; 1]',
+                                             name=reddit_feature,
+                                             text=str(reddit_feature)+'rescaled to [-1;1]',
                                              showlegend=True,
                                              hoverinfo='text',
                                              opacity=0.7,
@@ -391,10 +392,10 @@ class CombinedVisualizer:
 
         # create figure and layout
         fig = go.Figure(data=[
-            go.Bar(name='Correlation with Twitter Sentiment',
+            go.Bar(name='Correlation with '+str(twitter_feature),
                    x=stock_feature_list, y=twitter_corrcoef_list,
                    text=[str(round(corrcoef, 3)) for corrcoef in twitter_corrcoef_list], textposition="auto"),
-            go.Bar(name='Correlation with Reddit Sentiment',
+            go.Bar(name='Correlation with '+str(reddit_feature),
                    x=stock_feature_list, y=reddit_corrcoef_list,
                    text=[str(round(corrcoef, 3)) for corrcoef in reddit_corrcoef_list], textposition="auto")
         ])
@@ -527,13 +528,14 @@ class CombinedVisualizer:
         plt.savefig(os.path.join(GlobalConfig.PROGRAMMING_OUTPUTS_BASE_PATH,
                                  self.ticker, filename),
                     dpi=400)
+        plt.close()
 
         print(datetime.now(), ':', self.ticker, 'correlation_heatmap created.')
 
 
 
 
-    def plot_distribution_comparison(self, perform_t_test=True,
+    def plot_distribution_comparison(self, perform_k_s_test=True,
                                      stock_feature=GlobalConfig.MAX_MARGIN,
                                      twitter_feature=GlobalConfig.TWITTER_NUM_POS,
                                      reddit_feature=GlobalConfig.REDDIT_NUM_POS,
@@ -556,23 +558,25 @@ class CombinedVisualizer:
                                                           upper_bound=stock_feature_max)
 
         # perform Kolmogorov Smirnov test to see if data comes from the same distribution
-        statistic_twitter, pvalue_twitter = KolmogorovSmirnov(obs_array_1=stock_feature_list_rescaled,
-                                                              obs_array_2=twitter_feature_list_rescaled).perform_test()
-        statistic_reddit, pvalue_reddit = KolmogorovSmirnov(obs_array_1=stock_feature_list_rescaled,
-                                                            obs_array_2=reddit_feature_list_rescaled).perform_test()
+        if perform_k_s_test:
+            statistic_twitter, pvalue_twitter = KolmogorovSmirnov(obs_array_1=stock_feature_list_rescaled,
+                                                                  obs_array_2=twitter_feature_list_rescaled).perform_test()
+            statistic_reddit, pvalue_reddit = KolmogorovSmirnov(obs_array_1=stock_feature_list_rescaled,
+                                                                obs_array_2=reddit_feature_list_rescaled).perform_test()
 
         # plot histograms
-        plt.hist(stock_feature_list_rescaled, bins=50, alpha=0.5, color='grey', label=stock_feature)
-        plt.hist(twitter_feature_list_rescaled, bins=50, alpha=0.5, color='blue', label=twitter_feature)
-        plt.hist(reddit_feature_list_rescaled, bins=50, alpha=0.5, color='red', label=reddit_feature)
-        plt.title('Distribution Comparison\npvalue_twitter: '+str(round(pvalue_twitter, 2))+\
-                  ' - pvalue_reddit: '+str(round(pvalue_reddit, 2)))
+        plt.hist(stock_feature_list_rescaled, bins=10, alpha=0.2, color='green', label=stock_feature)
+        plt.hist(twitter_feature_list_rescaled, bins=10, alpha=0.2, color='blue', label=twitter_feature)
+        plt.hist(reddit_feature_list_rescaled, bins=10, alpha=0.2, color='red', label=reddit_feature)
+        plt.title('Distribution Comparison\npvalue_twitter: '+str(round(pvalue_twitter, 8))+\
+                  '\npvalue_reddit: '+str(round(pvalue_reddit, 8)), fontdict=dict(fontsize=8))
         plt.xlabel('Bins (features rescaled)')
         plt.legend(loc='upper right')
 
         plt.savefig(os.path.join(GlobalConfig.PROGRAMMING_OUTPUTS_BASE_PATH, self.ticker,
                     str(stock_feature)+'_'+str(twitter_feature)+'_'+str(reddit_feature)+ \
                     '_distribution_comparison.png'))
+        plt.close()
 
         print(datetime.now(), ':', self.ticker, 'distribution_comparison_plot created.')
 
